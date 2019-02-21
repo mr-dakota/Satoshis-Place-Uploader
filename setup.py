@@ -24,17 +24,24 @@ print("Running Satoshis.Place Image Uploader...")
 
 url='https://api.satoshis.place'
 
+height = int(input("Enter image height in pixels: "))
+width = int(input("Enter image width in pixels: "))
+
+imgx = int(input("Enter canvas coordinate x: "))
+imgy = int(input("Enter canvas coordinate y: "))
+
 satPlaceSocket = SatPlaceSocket()
 print("Connecting to API")
 filename = "img.png"
 print("Converting Image")
-cj = convert_image(filename, (150, 150), 400, 300)
+cj = convert_image(filename, (height, width), imgx, imgy)
 print("Requesting Invoice")
 emitResult = satPlaceSocket.emitNewOrder(cj)
 if emitResult:
     satPlaceSocket.wait(seconds=5)
     try:
         invoice = satPlaceSocket.receivedInvoice
+        print("Invoice received: ")
         print(invoice)
         invoiceexists = True
     except AttributeError:
@@ -43,7 +50,7 @@ if emitResult:
         print("- - -")
 
 if invoiceexists == True:
-    print("Renering QR Code...")
+    print("Rendering QR Code...")
     lninv = invoice.get('paymentRequest')
     qr = qrcode.QRCode(
         version=1,
